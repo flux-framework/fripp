@@ -1,4 +1,4 @@
-# Week 2: Exploration
+# Week 1: Exploration
 ### Brubeck, Graphite, & Statsd
 * What is [Graphite](http://graphite.readthedocs.org/)
 	* Graphite is a set of tools (carbon, whisper, and graphite webapp) which do 2 things:
