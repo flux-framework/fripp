@@ -15,7 +15,7 @@
 ### Setting up Graphite
 To set up a local instance of Graphite I followed this amazing blog post [here](https://luppeng.wordpress.com/2020/10/28/install-and-setup-graphite-on-ubuntu-server-20-04-via-apt-repository/).  After getting everything setup and running we can see the dashboard waiting for data.
 
-![Graphite Web](https://i.imgur.com/tBXXCnM.png)
+![Graphite Web](../img/gr_dash.png)
 
 ### Setting up Statsd
 To start with and get a basic understanding of the workflow and types supported by Statsd I started by setting up Statsd.
@@ -53,7 +53,7 @@ Then to test that everything was connected and running, I sent some dummy data, 
 $ echo "a.b:1|c" | nc -u -w1 0.0.0.0 8125
 ```
 
-![Statsd Dummy Data Graph](https://i.imgur.com/U0TtMYN.png)
+![Statsd Dummy Data Graph](../img/gr_a_dot_b.png)
 
 ### Setting up Brubeck
 
@@ -109,7 +109,7 @@ Now that we have brubeck setup, let's send it some dummy data to make sure it's 
 $ for i in {1..1000}; do echo "bar.foo.baz:$i|c" | nc -u -w1 0.0.0.0 8126; done
 ```
 
-![Brubeck Dummy Data Graph](https://i.imgur.com/3nW3jIr.png)
+![Brubeck Dummy Data Graph](../img/gr_bar_dot_foo_dot_baz.png)
 ### Testing Performance
 Brubeck comes packaged up with a udp stress test to help get a sense of how many metrics per second it can handle. 
 
@@ -137,7 +137,7 @@ for i in {1..100000}; do echo "bar.foo.baz1:$i|c" >/dev/udp/<hostname>/8126; don
 ```
 As you can see using `nc` is, for some reason, insanely slower (~20,000x). The metrics received per second by the brubeck instance can be seen by going to the the host address /ping. In my case that was `0.0.0.0:8080/ping`, and you can see some of the live information coming thru.
 
-![Brubeck Ping](https://i.imgur.com/C6nUypb.png)
+![Brubeck Ping](../img/bru_ping.png)
 
 Then I tried to change the number of worker threads to see if there was some optimal range, and I did not see a difference aside from using a single thread. I even tried an absurd 256 which seemed to be catching the same number of metrics per second.
 

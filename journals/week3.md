@@ -15,19 +15,19 @@ $ for i in {1..10000}; do flux mini run echo -n "$i " && hostname; done
 
 job-ingest message counters received per 10s flush interval
 
-![job-ingest msg counters](https://i.imgur.com/qrhu9r5.png)
+![job-ingest msg counters](../img/gr_flux_msgc_ji.png)
 
 job-ingest total message counts
 
-![job-ingest total counters](https://i.imgur.com/29E2m87.png)
+![job-ingest total counters](../img/flux_ji_stats.png)
 
 Brubeck total number of metrics (packets) received per 10s flush interval
 
-![brubeck metrics/s](https://i.imgur.com/nLDYstX.png)
+![brubeck metrics/s](../img/bru_flux.png)
 
 There is a noticeable decline in the number of messages received by the job-ingest module as the instance continues to run jobs which follows a roughly logarithmic pattern for all of the messages that are actually changing. To try and test this out I pulled a fresh instance, enable fripp debugging on all modules and then ran 10,000 jobs using the `src/test/throughput.py` script to test the throughput; running 10,000 jobs with a 1ms runtime took only about 5m23s which is about 9% as long as running 10,000 (`echo "$i " && hostname`) jobs earlier with about a 50ms run time.
 
-![10000 jobs throughput](https://i.imgur.com/iO1YGig.png)
+![10000 jobs throughput](../img/flux_thruput.png)
 
 ---
 
@@ -79,19 +79,19 @@ I ran this script to run 10,000 jobs in batches of 100 at a time like:
 
 First, I ran this without sending and message counters, and it took about 1h2m10s. Next, I ran it again in a new instance but with the 1s timer watcher sending the message counters to brubeck and it took about 1h2m19s. Lastly, I ran it again in the same instance I ran the previous test in. and it took about 2h54m2s. From within a fresh flux instance, there was not much of a difference between sending and not sending the metrics with only about a 9s difference overall, and a 0-1s difference per batch.
 
-![fresh instance w/ vs w/o metrics](https://i.imgur.com/gJK0yYh.png)
+![fresh instance w/ vs w/o metrics](../img/gs_m_v_nm.png)
 
 However, when running 10,000 additional jobs on an instance that just ran 10,000 jobs serially, there was a huge slowdown. The job time for the lifetime of the script followed basically the same small linear increase.
 
-![fresh vs old instance](https://i.imgur.com/RBTcqC3.png)
+![fresh vs old instance](../img/gs_20000.png)
 
 After seeing the large increase, I wanted to see if the completion times would just continue to grow, so I launched a larger job set of 250 iterations of 100 jobs (25,000 jobs) and it took about 4h51m2s. The total completion time for each loop of jobs (the sum of each individual batch of jobs) took 17462s which is roughly 4h51m, so most of the time seems to be spent running the jobs.
 
-![25000 jobs # vs time](https://i.imgur.com/RMnoJ5F.png)
+![25000 jobs # vs time](../img/gs_25000_jt.png)
 
 One interesting thing to note is that after the the peak time for 100 jobs of 162s after the 216th iteration, the time jumps down massively to only 18s on the 218th iteration which is only slightly slower than the starting time of 12s. The size of the content-sqlite file seemed to grow exponentially for about the first 217 iterations (21,700 jobs), then started to level off, and it apparently has a great fit of an 8th degree polynomial. I think gathering some metrics from within the content-cache could help explain the increase in job completion time and the sudden drop in time as well.
 
-![25,000 jobs # vs content size](https://i.imgur.com/zDW7sJe.png)
+![25,000 jobs # vs content size](../img/gs_25000_cfs.png)
 
 ---
 
@@ -114,13 +114,13 @@ if (sendto (sock, packet, len, 0, (void  *) &ctx->si_server, sock_len) <  0)
 	flux_log (ctx->h, LOG_ALERT, "packet %s dropped", packet);
 ```
 
-![total msg counters](https://i.imgur.com/PJbXitJ.png)
+![total msg counters](../img/gr_flux_msgc_tot.png)
 
  Or it can be done within Graphite by summing all of the data from the individual message counter series.
 
-![graphite sum](https://i.imgur.com/ZY2ktrE.png)
+![graphite sum](../img/gr_flux_msgc_ji_1.png)
 
-![graphite sum](https://i.imgur.com/bmcQVu3.png)
+![graphite sum](../img/gr_flux_msgc_ji_tot.png)
 
 #### Combining Per-Rank Message Counters
 
@@ -136,11 +136,11 @@ $ flux exec flux module debug -s 0x1000 kvs
 
 The total number of messages per rank (ranks 1, 2, and 3 are all on top of each other)
 
-![per rank kvs](https://i.imgur.com/BczCFUB.png)
+![per rank kvs](../img/gr_flux_4-rank_kvs.png)
 
 The total number of kvs messages for the instance
 
-![combined kvs](https://i.imgur.com/7ec7ShJ.png)
+![combined kvs](../img/gr_flux_4-rank_kvs_sum.png)
 
 ### Leveraging Statsd/Brubeck Metric Types
 The statsd supported types are documented on their [GitHub](https://github.com/statsd/statsd/blob/master/docs/metric_types.md) repo, and [here](https://sysdig.com/blog/monitoring-statsd-metrics/) is a nice summary blog post about them as well.
