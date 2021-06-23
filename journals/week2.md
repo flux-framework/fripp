@@ -108,7 +108,7 @@ $ sudo systemctl restart collectd.service
 $ for i in {1..100000}; do echo "foo.bar:1|c" >/dev/udp/<hostname>/8125; done
 ```
 
-![collectd statsd](https://i.imgur.com/Gav6wG2.png)
+![collectd statsd](../img/col-d_foo_bar.png)
 ---
 
 ### Launching Brubeck Alongside Flux
@@ -228,14 +228,14 @@ This was my first attempt at sending the message counters, and for some reason o
 for i in {1..100}; do flux mini run hostname; done
 ```
 
-![msg counter dump](https://i.imgur.com/9tnzqBp.png)
+![msg counter dump](../img/gr_flux_inc_5.png)
 
-![msg counter heirarchy](https://i.imgur.com/UPS0SxL.png)
-![msg counter brubeck](https://i.imgur.com/6NAnU5q.png)
+![msg counter heirarchy](../img/gr_flux_inc_5_f.png)
+![msg counter brubeck](../img/bru_flux_inc_5.png)
 
 But after rebuilding flux, the error went away, and sending the metrics as counters (instead of gauges) ~192 metrics/s  were when instance is just idling.
 
-![msg counters c](https://i.imgur.com/7UkpqJE.png)
+![msg counters c](../img/gr_flux_msgc_kvs.png)
 
 #### Sending the Metrics from Within Debug Mode
 
@@ -313,13 +313,13 @@ static  void  prepare_cb (flux_reactor_t  *r, flux_watcher_t  *w,
 
 KVS message counters received:
 
-![prep watcher kvs](https://i.imgur.com/4bnLftr.png)
+![prep watcher kvs](../img/gr_flux_msgc_kvs_p.png)
 
 Brubeck metrics received:
 peak metrics/s ~27,000 |
 min metrics/s ~7,000
 
-![prep watcher brubeck metrics/s](https://i.imgur.com/hzYiRfS.png)
+![prep watcher brubeck metrics/s](../img/gr_bru_p.png)
 ___
 
  #### Using the idle watcher - took ~1h43m5s:
@@ -349,13 +349,13 @@ static  void  idle_cb (flux_reactor_t  *r, flux_watcher_t  *w,
 
 KVS message counters received:
 
-![idle watcher kvs](https://i.imgur.com/ZiJ9rij.png)
+![idle watcher kvs](../img/gr_flux_msgc_kvs_i.png)
 
 Brubeck metrics received:
 peak metrics/s ~21,000 |
 min metrics/s ~4,500
 
-![idle watcher brubeck metrics/s](https://i.imgur.com/X9pwoql.png)
+![idle watcher brubeck metrics/s](../img/gr_bru_i.png)
 
 --- 
 
@@ -387,13 +387,13 @@ static  void  check_cb (flux_reactor_t  *r, flux_watcher_t  *w,
 
 KVS message counters received:
 
-![check watcher kvs](https://i.imgur.com/U4OBhSW.png)
+![check watcher kvs](../img/gr_flux_msgc_kvs_c.png)
 
 Brubeck metrics received:
 peak metrics/s ~25,000 | 
 min metrics/s ~5,500
 
-![check watcher brubeck metrics/s](https://i.imgur.com/NcWOTLd.png)
+![check watcher brubeck metrics/s](../img/gr_bru_c.png)
 
 Based on metrics/s during a large load of jobs the prep watcher has the highest throughput, followed by the check watcher, which in turn is followed by the idle watcher, but it is worth noting that all of the watchers had a pretty drastic drop in metrics received the longer the instance kept running.
 
@@ -403,35 +403,35 @@ After seeing how each of the different watchers performed while under load, I wa
 
 content-sqlite: 
 
-![check watcher idle content-sqlite](https://i.imgur.com/KH95I74.png)
+![check watcher idle content-sqlite](../img/gr_flux_msgc_je_csql.png)
 
 cron: 
 
-![check watcher idle cron](https://i.imgur.com/rwWTr8a.png)
+![check watcher idle cron](../img/gr_flux_msgc_cron_c.png)
 
 heartbeat:
 
-![check watcher idle heartbeat](https://i.imgur.com/T4AoxmU.png)
+![check watcher idle heartbeat](../img/gr_flux_msgc_hb_c.png)
 
 job-exec:
 
-![check watcher idle job-exec](https://i.imgur.com/Q3q9vT9.png)
+![check watcher idle job-exec](../img/gr_flux_msgc_je_c.png)
 
 job-manager:
 
-![check watcher idle job-manager](https://i.imgur.com/24J2gsL.png)
+![check watcher idle job-manager](../img/gr_flux_msgc_jm_c.png)
 
 kvs:
 
-![check watcher idle kvs](https://i.imgur.com/N5AT9EQ.png)
+![check watcher idle kvs](../img/gr_flux_msgc_kvs_c.png)
 
 sched-simple:
 
-![check watcher idle sched-simple](https://i.imgur.com/qh5zZVu.png)
+![check watcher idle sched-simple](../img/gr_flux_msgc_ss_c.png)
 
 #### Check watcher - idling ~ 9m8s | ~150 metrics/s
 
-![check watcher idle metrics](https://i.imgur.com/atqPIMF.png)
+![check watcher idle metrics](../img/gr_flux_msgc_idle_c.png)
 
 | message type | content-sqlite | cron | heartbeat | job-exec | job-manager | kvs | sched-simple | 
 | :---: |  :---: | :---: |:---: | :---: |:---: | :---: | :---: |
@@ -447,7 +447,7 @@ sched-simple:
 
  #### Idle watcher idling ~ 10m57s | ~180 metrics/s
 
-![idle watcher idle metrics/s](https://i.imgur.com/sIJxZd1.png)
+![idle watcher idle metrics/s](../img/gr_flux_msgc_idle_i.png)
 
 | message type | content-sqlite | cron | heartbeat | job-exec | job-manager | kvs | sched-simple | 
 | :---: |  :---: | :---: |:---: | :---: |:---: | :---: | :---: |
@@ -462,7 +462,7 @@ sched-simple:
 
 #### Prep watcher idling ~9m44s | ~192 metrics/s
 
-![prep watcher idle metrics/s](https://i.imgur.com/PGN3zf5.png)
+![prep watcher idle metrics/s](../img/gr_flux_msgc_idle_p.png)
 
 The prep watcher's total message counters by module followed roughly the same pattern as the idle and check watcher.
 
