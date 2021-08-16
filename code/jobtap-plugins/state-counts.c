@@ -31,24 +31,19 @@ static int state_cb (flux_plugin_t *p,
         return -1;
     }
 
-    if (flux_stats_inc (h, "flux.job.state.%s", 
-                flux_job_statetostr (state, false)) == -1) {
-            flux_log_error (h, "%s job state inc", 
-                    flux_job_statetostr (state, false));
-            return -1;
-    }
-    if (flux_stats_dec (h, "flux.job.state.%s", 
-            flux_job_statetostr (prev_state, false)) == -1) {
-            flux_log_error (h, "%s job state dec", 
-                    flux_job_statetostr (prev_state, false));
-            return -1;
-    }
+    flux_stats_gauge_inc (h, flux_job_statetostr (state, false), 1);
+    flux_stats_gauge_inc (h, flux_job_statetostr (prev_state, false), -1);
 
     return 0;
 }
 
 int flux_plugin_init(flux_plugin_t *p)
 {
+    flux_t *h;
+    if (!(h = flux_jobtap_get_flux (p)))
+        return -1;
+
+    flux_stats_set_prefix (h, "flux.job.state");
     return flux_plugin_add_handler (p, "job.state.*", state_cb, NULL);
 }
 
